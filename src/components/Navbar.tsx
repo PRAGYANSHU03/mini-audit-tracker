@@ -23,7 +23,7 @@ const Navbar = () => {
 						</Link>
 						<Link
 							to="/observations/new"
-							className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
+							className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-white hover:text-blue-600 hover:border hover:border-blue-600 transition duration-300 ease-in-out"
 						>
 							+ New Observation
 						</Link>
