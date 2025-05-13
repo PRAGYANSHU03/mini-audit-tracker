@@ -2,24 +2,36 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Observation, Severity, Status } from '../types';
 import { saveObservation } from '../utils/storage';
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from '../components/ui/form';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { Button } from '../components/ui/button';
+import { useForm } from "react-hook-form";
 
 const CreateObservation = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<Partial<Observation>>({
-    title: '',
-    description: '',
-    severity: 'Medium',
-    status: 'Open',
-    assignedTo: '',
+  const form = useForm<Partial<Observation>>({
+    defaultValues: {
+      title: '',
+      description: '',
+      severity: 'Medium',
+      status: 'Open',
+      assignedTo: '',
+    }
   });
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    form.setValue(name as keyof Observation, value);
+  };
+
+  const handleSelectChange = (name: keyof Observation, value: string) => {
+    form.setValue(name, value);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,18 +46,15 @@ const CreateObservation = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const onSubmit = (data: Partial<Observation>) => {
     const newObservation: Observation = {
       id: crypto.randomUUID(),
-      ...formData as Omit<Observation, 'id'>,
+      ...data as Omit<Observation, 'id'>,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       evidence: preview || undefined,
       evidenceName: file?.name,
     };
-
     saveObservation(newObservation);
     navigate('/observations');
   };
@@ -53,105 +62,99 @@ const CreateObservation = () => {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Create New Observation</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-            Title
-          </label>
-          <input
-            type="text"
-            id="title"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 rounded-lg shadow">
+          <FormField
+            control={form.control}
             name="title"
-            required
-            value={formData.title}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-            Description
-          </label>
-          <textarea
-            id="description"
+          <FormField
+            control={form.control}
             name="description"
-            required
-            rows={4}
-            value={formData.description}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <label htmlFor="severity" className="block text-sm font-medium text-gray-700">
-            Severity
-          </label>
-          <select
-            id="severity"
+          <FormField
+            control={form.control}
             name="severity"
-            required
-            value={formData.severity}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-          >
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="assignedTo" className="block text-sm font-medium text-gray-700">
-            Assigned To
-          </label>
-          <input
-            type="text"
-            id="assignedTo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Severity</FormLabel>
+                <FormControl>
+                  <Select {...field} onValueChange={(value) => handleSelectChange('severity', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select severity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="High">High</SelectItem>
+                      <SelectItem value="Medium">Medium</SelectItem>
+                      <SelectItem value="Low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
             name="assignedTo"
-            required
-            value={formData.assignedTo}
-            onChange={handleInputChange}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Assigned To</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
-
-        <div>
-          <label htmlFor="evidence" className="block text-sm font-medium text-gray-700">
-            Supporting Evidence
-          </label>
-          <input
-            type="file"
-            id="evidence"
+          <FormField
+            control={form.control}
             name="evidence"
-            onChange={handleFileChange}
-            className="mt-1 block w-full"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Supporting Evidence</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    {...field}
+                    onChange={handleFileChange}
+                  />
+                </FormControl>
+                {preview && (
+                  <div className="mt-2">
+                    <img src={preview} alt="Preview" className="max-w-xs rounded-lg shadow" />
+                  </div>
+                )}
+                <FormMessage />
+              </FormItem>
+            )}
           />
-          {preview && (
-            <div className="mt-2">
-              <img src={preview} alt="Preview" className="max-w-xs rounded-lg shadow" />
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            onClick={() => navigate('/observations')}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
-          >
-            Create Observation
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-end space-x-4">
+            <Button type="button" variant="outline" onClick={() => navigate('/observations')}>
+              Cancel
+            </Button>
+            <Button type="submit">Create Observation</Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 };

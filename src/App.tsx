@@ -1,3 +1,4 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ObservationList from './pages/ObservationList';
 import CreateObservation from './pages/CreateObservation';
@@ -7,7 +8,7 @@ import Navbar from './components/Navbar';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen w-[100dvw] bg-gradient-to-br from-white via-blue-100 to-blue-200">
         <Navbar />
         <main className="container mx-auto px-4 py-8">
           <Routes>

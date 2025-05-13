@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Observation, Severity, Status } from '../types';
 import { getObservations } from '../utils/storage';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const ObservationList = () => {
   const [observations, setObservations] = useState<Observation[]>([]);
@@ -42,51 +42,59 @@ const ObservationList = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Observations</h1>
-        <Link
-          to="/observations/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-        >
-          New Observation
-        </Link>
       </div>
 
+      {/* Filters Container */}
       <div className="bg-white p-4 rounded-lg shadow">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value as Status | 'All')}
-            className="border rounded-md p-2"
-          >
-            <option value="All">All Statuses</option>
-            <option value="Open">Open</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Closed">Closed</option>
-          </select>
+        <h2 className="text-lg font-semibold mb-4">Filters</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Filter by Status</h3>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as Status | 'All')}
+              className="border bg-white rounded-md p-2 w-full"
+            >
+              <option value="All">All</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
 
-          <select
-            value={filterSeverity}
-            onChange={(e) => setFilterSeverity(e.target.value as Severity | 'All')}
-            className="border rounded-md p-2"
-          >
-            <option value="All">All Severities</option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Filter by Severity</h3>
+            <select
+              value={filterSeverity}
+              onChange={(e) => setFilterSeverity(e.target.value as Severity | 'All')}
+              className="border bg-white rounded-md p-2 w-full"
+            >
+              <option value="All">All</option>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
 
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
-            className="border rounded-md p-2"
-          >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-2">Sort by</h3>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'newest' | 'oldest')}
+              className="border bg-white rounded-md p-2 w-full"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
         </div>
+      </div>
 
+      {/* Observations Table */}
+      <div className="bg-white p-4 rounded-lg shadow">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-white">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Title
@@ -155,17 +163,18 @@ const ObservationList = () => {
         </div>
       </div>
 
+      {/* Status Distribution Chart */}
       <div className="bg-white p-4 rounded-lg shadow">
         <h2 className="text-lg font-semibold mb-4">Status Distribution</h2>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="status" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="count" fill="#3B82F6" />
-            </BarChart>
+              <Line type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={2} />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
@@ -173,4 +182,4 @@ const ObservationList = () => {
   );
 };
 
-export default ObservationList; 
+export default ObservationList;
