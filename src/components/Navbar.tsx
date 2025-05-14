@@ -1,11 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { LucideArrowUpRight, PlusIcon } from "lucide-react";
+
 const Navbar = () => {
 	return (
-		<nav className="w-full bg-white shadow-lg">
+		<nav className="fixed top-0 left-0 w-full bg-white rounded-b-lg shadow-lg z-50">
 			<div className="container mx-auto">
-				<div className="flex justify-between h-16">
+				<div className="flex justify-between h-16 px-4">
 					<div className="flex">
 						<Link to="/" className="flex items-center space-x-2">
 							<img src={logo} alt="Logo" className="h-8 w-auto" />
@@ -17,15 +19,17 @@ const Navbar = () => {
 					<div className="flex items-center space-x-4">
 						<Link
 							to="/observations"
-							className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+							className="flex items-center text-blue-600 px-3 py-2 rounded-md text-sm font-medium border border-blue-600 hover:text-white hover:bg-blue-600 transition duration-300 ease-in-out"
 						>
+							<LucideArrowUpRight className="w-4 h-4 mr-2" />
 							Observations
 						</Link>
 						<Link
 							to="/observations/new"
-							className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-white hover:text-blue-600 hover:border hover:border-blue-600 transition duration-300 ease-in-out"
-						>
-							+ New Observation
+							className="flex items-center text-blue-600 px-3 py-2 rounded-md text-sm font-medium border border-blue-600 hover:text-white hover:bg-blue-600 transition duration-300 ease-in-out"
+						>	
+							<PlusIcon className="w-4 h-4 mr-2" />
+							New Observation
 						</Link>
 					</div>
 				</div>

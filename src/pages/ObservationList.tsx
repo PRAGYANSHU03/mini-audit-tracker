@@ -14,6 +14,25 @@ import {
 	Legend,
 } from "recharts";
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+
+  // Add suffix for the day (e.g., 1st, 2nd, 3rd, etc.)
+  const daySuffix =
+    day % 10 === 1 && day !== 11
+      ? 'st'
+      : day % 10 === 2 && day !== 12
+      ? 'nd'
+      : day % 10 === 3 && day !== 13
+      ? 'rd'
+      : 'th';
+
+  return `${day}${daySuffix} ${month} ${year}`;
+};
+
 const ObservationList = () => {
 	const [observations, setObservations] = useState<Observation[]>([]);
 	const [filterStatus, setFilterStatus] = useState<Status | "All">("All");
@@ -144,14 +163,14 @@ const ObservationList = () => {
 									<td className="px-6 py-4 whitespace-nowrap">
 										<Link
 											to={`/observations/${observation.id}`}
-											className="text-blue-600 hover:text-blue-900"
+											className="text-blue-600 hover:underline-offset-auto hover:underline"
 										>
 											{observation.title}
 										</Link>
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
 										<span
-											className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+											className={`px-4 inline-flex text-xs leading-6 font-semibold rounded-full ${
 												observation.severity === "High"
 													? "bg-red-100 text-red-800"
 													: observation.severity === "Medium"
@@ -164,7 +183,7 @@ const ObservationList = () => {
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap">
 										<span
-											className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+											className={`px-4 inline-flex text-xs leading-6 font-semibold rounded-full ${
 												observation.status === "Closed"
 													? "bg-green-100 text-green-800"
 													: observation.status === "In Progress"
@@ -179,7 +198,7 @@ const ObservationList = () => {
 										{observation.assignedTo}
 									</td>
 									<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-										{new Date(observation.createdAt).toLocaleDateString()}
+										{formatDate(observation.createdAt)}
 									</td>
 								</tr>
 							))}
@@ -203,8 +222,7 @@ const ObservationList = () => {
 								dataKey="count"
 								name="Observations"
 								label={{ position: "top" }}
-								isAnimationActive={true}
-                activeBar = {false}
+								isAnimationActive={false} // Disable hover animation
 							>
 								{chartData.map((entry, index) => {
 									let fillColor;
