@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Observation, Status, Severity } from "../types";
-import { getObservationById, saveObservation } from "../utils/storage";
+import { getObservationById, saveObservation, deleteObservation } from "../utils/storage";
 import { useForm } from "react-hook-form";
 import {
 	Form,
@@ -21,6 +21,7 @@ import {
 	SelectValue,
 } from "../components/ui/select";
 import { Button } from "../components/ui/button";
+import ConfirmModal from "../components/ConfirmModal";
 
 const ObservationDetail = () => {
 	const { id } = useParams<{ id: string }>();
@@ -28,6 +29,7 @@ const ObservationDetail = () => {
 	const [observation, setObservation] = useState<Observation | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [preview, setPreview] = useState<string | null>(null);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	const form = useForm<Partial<Observation>>({
 		defaultValues: {
@@ -78,6 +80,17 @@ const ObservationDetail = () => {
 		}
 	};
 
+	const handleDelete = () => {
+		setShowDeleteModal(true);
+	};
+
+	const confirmDelete = () => {
+		if (observation) {
+			deleteObservation(observation.id);
+			navigate("/observations");
+		}
+	};
+
 	if (!observation) {
 		return <div>Loading...</div>;
 	}
@@ -93,7 +106,12 @@ const ObservationDetail = () => {
 						Back to List
 					</Button>
 					{!isEditing ? (
-						<Button onClick={() => setIsEditing(true)}>Edit</Button>
+						<>
+							<Button onClick={() => setIsEditing(true)}>Edit</Button>
+							<Button variant="destructive" onClick={handleDelete}>
+								Delete
+							</Button>
+						</>
 					) : (
 						<Button variant="default" onClick={form.handleSubmit(onSubmit)}>
 							Save Changes
@@ -333,6 +351,13 @@ const ObservationDetail = () => {
 					</Form>
 				</div>
 			</div>
+			<ConfirmModal
+				open={showDeleteModal}
+				title="Delete Observation"
+				message="Are you sure you want to delete this observation?"
+				onConfirm={confirmDelete}
+				onCancel={() => setShowDeleteModal(false)}
+			/>
 		</div>
 	);
 };
