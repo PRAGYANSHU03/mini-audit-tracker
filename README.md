@@ -56,14 +56,6 @@ src/
   └── main.tsx       # Application entry point
 ```
 
-## Deployment
-
-This project is configured for easy deployment on Vercel:
-
-1. Push your code to GitHub
-2. Import the project in Vercel
-3. Deploy!
-
 ## License
 
 MIT
