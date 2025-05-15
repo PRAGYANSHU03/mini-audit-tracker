@@ -25,7 +25,7 @@ A simple audit workflow application for tracking observations and their resoluti
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/PRAGYANSHU03/mini-audit-tracker.git
 cd mini-audit
 ```
 
